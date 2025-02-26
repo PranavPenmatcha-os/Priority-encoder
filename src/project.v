@@ -16,25 +16,26 @@ module tt_um_priority_encoder (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-  wire [15:0] in_data = {ui_in, uio_in}; // Concatenating A[7:0] and B[7:0]
-  reg  [7:0]  C;
-  integer i;
+    always @ (*)
+        begin
+            if (ui_in[7] == 1) uo_out = 8b'15;
+            else if(ui_in[6] == 1) uo_out = 8b'14;
+            else if(ui_in[5] == 1) uo_out = 8b'13;
+            else if(ui_in[4] == 1) uo_out = 8b'12;
+            else if(ui_in[3] == 1) uo_out = 8b'11;
+            else if(ui_in[2] == 1) uo_out = 8b'10;
+            else if(ui_in[1] == 1) uo_out = 8b'9;
+            else if(ui_in[0] == 1) uo_out = 8b'8;
+            else if(uio_in[6] == 1) uo_out = 8b'7;
+            else if(uio_in[5] == 1) uo_out = 8b'6;
+            else if(uio_in[6] == 1) uo_out = 8b'5;
+            else if(uio_in[4] == 1) uo_out = 8b'4;
+            else if(uio_in[3] == 1) uo_out = 8b'3;
+            else if(uio_in[2] == 1) uo_out = 8b'2;
+            else if(uio_in[1] == 1) uo_out = 8b'1;
+            else
+                uo_out = 8b'11110000 // special case
 
-  always @(*) begin
-    C = 8'b1111_0000; // Default case when in_data is all 0s
-    for (i = 15; i >= 0; i = i - 1) begin
-      if (in_data[i]) begin
-        C = i[7:0];
-        break;
-      end
-    end
-  end
-
-  assign uo_out  = C; // Output C[7:0]
-  assign uio_out = 8'b0000_0000; // Unused
-  assign uio_oe  = 8'b0000_0000; // Unused
-
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+    always uio_oe = 0;
 
 endmodule
